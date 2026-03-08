@@ -333,8 +333,9 @@ footer a:hover { text-decoration: underline; }
     <div class="calc-right">
       <section class="form-section" style="position:sticky;top:16px;">
         <div class="section-header"><h2>Resultados</h2></div>
+        <button type="button" onclick="calcularPasteurizacionUnificada()" style="width:100%;margin-bottom:12px;padding:10px;background:var(--accent);color:#0c1a00;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;">⚡ Calcular</button>
         <div class="calc-resultado-panel" id="calcResultadoPanel">
-          <p class="empty-msg">Completá los datos para ver los resultados.</p>
+          <p class="empty-msg">Completá los datos y presioná Calcular.</p>
         </div>
       </section>
     </div>
@@ -691,17 +692,33 @@ document.addEventListener("DOMContentLoaded", () => {
   actualizarSugeridos();
   calcularPasteurizacionUnificada();
 
+  // Cambio de método
   document.getElementById("tipoPasteurizacion")?.addEventListener("change", () => {
     actualizarMetodoHint(); renderParamBlock(); calcularPasteurizacionUnificada();
   });
+
+  // Cambio de recipiente
   document.getElementById("tipoRecipiente")?.addEventListener("change", () => {
     actualizarVolumenRecipiente(); calcularPasteurizacionUnificada();
   });
+
+  // Sustrato base → sugeridos
   document.getElementById("sust1Tipo")?.addEventListener("input", () => {
     actualizarSugeridos(); calcularPasteurizacionUnificada();
   });
-  ["sust1Kg","sust2Tipo","sust2Pct","sust3Tipo","sust3Pct","volumenRecipiente","densidadMezcla","pctLlenado"]
-    .forEach(id => document.getElementById(id)?.addEventListener("input", calcularPasteurizacionUnificada));
+
+  // Event delegation en toda la columna izquierda:
+  // captura cualquier input/change incluyendo los params dinámicos
+  document.querySelector(".calc-left")?.addEventListener("input", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") {
+      calcularPasteurizacionUnificada();
+    }
+  });
+  document.querySelector(".calc-left")?.addEventListener("change", (e) => {
+    if (e.target.tagName === "SELECT") {
+      calcularPasteurizacionUnificada();
+    }
+  });
 });
 </script>
 </body>
